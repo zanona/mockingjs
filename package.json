@@ -1,0 +1,26 @@
+{
+  "name": "mockingjs",
+  "version": "0.1.0",
+  "description": "JSON Schema mocking utility",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marcus Zanona <zanona@me.com>",
+  "license": "ISC",
+  "dependencies": {
+    "scrab": "0.0.7"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zanona/mockingjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zanona/mockingjs/issues"
+  },
+  "homepage": "https://github.com/zanona/mockingjs#readme"
+}

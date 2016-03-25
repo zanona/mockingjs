@@ -1,0 +1,66 @@
+definitions:
+  Model:
+    required: [name, nested, complex-array]
+    properties:
+      name:   { type: string, enum: ['foo', 'bar'] }
+      age:    { type: integer, multipleOf: 30 }
+      money:  { type: number  }
+      active: { type: boolean }
+      noop:   { type: 'null'  }
+      nested:
+        required: [nested-name, nested-age, nested-obj]
+        properties:
+          nested-name: { type: string }
+          nested-age:  { type: number }
+          nested-obj:
+            required: [deep-nested-name]
+            properties:
+              deep-nested-name: { type: string }
+      simple-array:
+        items: { type: number }
+      complex-array:
+        uniqueItems: true
+        items:
+          required: [boolean, nest]
+          properties:
+            string:  { type: string }
+            number:  { type: number }
+            boolean: { type: boolean }
+            test:    { type: string }
+            nest:
+              required: [deep-nest]
+              properties:
+                nest-name: { type: string }
+                deep-nest:
+                  required: [deep-nested-name]
+                  properties:
+                    deep-nest-name: { type: string }
+          dependencies:
+            boolean: [number]
+            test:
+              properties:
+                bar: { type: string }
+                geo: { type: number }
+      simple-all:
+        allOf:
+          - { type: string  }
+          - { maxLength: 5  }
+      complex-all:
+        allOf:
+          - { properties: { string:  { type: string  }}}
+          - { properties: { integer: { type: integer }}}
+      simple-one:
+        oneOf:
+          - { type: string  }
+          - { type: integer }
+      complex-one:
+        oneOf:
+          - required: [string]
+            properties:
+              string:  { type: string }
+              number:  { type: number }
+          - { properties: { integer: { type: integer }}}
+      any:
+        anyOf:
+          - { properties: { string:  { type: string  }}}
+          - { properties: { integer: { type: integer }}}
