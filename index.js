@@ -15,7 +15,7 @@ function isObject(obj) {
 function random(min, max) {
     min = min || 0;
     max = max || 1;
-    if (min >= max) { max = min + max; }
+    if (min > max) { max = min + max; }
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function randomUUID() {
