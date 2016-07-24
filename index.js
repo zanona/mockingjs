@@ -256,10 +256,15 @@ function mockType(type, options, path) {
     }
 }
 
+function getOptionKeys(schema) {
+  const opts = {};
+  Object.keys(schema).forEach((key) => {
+    opts[key] = schema[key];
+  });
+  return opts;
+}
+
 mock = function (schema, options, path) {
-    if (!schema) {
-        console.log('@@@@', options, path);
-    }
     if (schema.properties) {
         options = {
             required: schema.required || [],
@@ -268,11 +273,14 @@ mock = function (schema, options, path) {
         return mockObject(schema.properties, options, path);
     }
     if (schema.items) {
+        /*
         options = {
             maxItems: schema.maxItems,
             minItems: schema.minItems,
             uniqueItems: schema.uniqueItems
         };
+        */
+        options = getOptionKeys(schema);
         return mockArray(schema.items, options, path);
     }
     if (schema.allOf) {
@@ -285,10 +293,11 @@ mock = function (schema, options, path) {
         return mockOneOf(schema.oneOf, path);
     }
     if (schema.type) {
+        /*
         options = {
             maximum: schema.maximum,
-            exclusiveMaximum: schema.exclusiveMaximum,
             minimum: schema.minimum,
+            exclusiveMaximum: schema.exclusiveMaximum,
             exclusiveMinimum: schema.exclusiveMinimum,
             multipleOf: schema.multipleOf,
             maxLength: schema.maxLength,
@@ -297,6 +306,8 @@ mock = function (schema, options, path) {
             pattern: schema.pattern,
             enum: schema.enum
         };
+        */
+        options = getOptionKeys(schema);
         return mockType(schema.type, options, path);
     }
 };
