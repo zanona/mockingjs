@@ -1,3 +1,5 @@
+/*eslint indent: [1,4]*/
+'use strict';
 var scrab = require('scrab'),
     mock,
     onPropertyCallback;
@@ -11,6 +13,21 @@ function isArray(obj) {
 function isObject(obj) {
     return obj && obj.constructor.name === 'Object';
 }
+  function normalizeObject(obj) {
+    if (typeof obj !== 'object' || obj === null) return obj;
+    const isArray = Array.isArray(obj),
+          keys    = isArray ? obj : Object.keys(obj).sort(),
+          ext     = isArray ? [] : {};
+    return keys.reduce((array, value, index) => {
+      if (isArray) {
+        array[index] = normalizeObject(value);
+      } else {
+        const key = value;
+        array[key] = normalizeObject(obj[key]);
+      }
+      return array;
+    }, ext);
+  }
 
 function random(min, max) {
     min = min || 0;
@@ -61,16 +78,6 @@ function randomUri() {
         + tlds[random(0, tlds.length -1)];
 }
 
-function filterUnique(array, max) {
-    var unique = [], i;
-    for (i = 0; i < array.length; i += 1) {
-        if (unique.length === max) { break; }
-        if (unique.indexOf(array[i]) === -1) {
-            unique.push(array[i]);
-        }
-    }
-    return unique;
-}
 function shouldAddProperty(propertyName, requiredProperties) {
     var isSkippable = requiredProperties.indexOf(propertyName) === -1;
     if (isSkippable) {
@@ -143,21 +150,28 @@ function mockArray(items, options, path) {
     min = options.minItems || 1;
     max = options.maxItems || random(min, 3);
 
-    if (options.uniqueItems) {
-        size = max * 100;
-    } else {
-        size = random(min, max);
+    size = random(min, max);
+    array = Array(size).fill();
+
+    function generateItem() {
+        var item = normalizeObject(mock(items, null, path));
+        // Prevent empty objects in array
+        if (isObject(item) && !Object.keys(item).length) return generateItem();
+        return item;
+    }
+    function generateUniqueItem() {
+      const item = generateItem(),
+            exists = array.filter((existingItem) => {
+              return JSON.stringify(existingItem) === JSON.stringify(item);
+            })[0];
+      if (exists) return generateUniqueItem();
+      return item;
     }
 
-    array = [];
-    function generateItem() {
-        var value = mock(items, null, path);
-        // Prevent empty objects in array
-        if (isObject(value) && !Object.keys(value).length) { return generateItem(); }
-        array.push(value);
+    for (const index in array) {
+      const item = options.uniqueItems ? generateUniqueItem() : generateItem();
+      array[index] = item;
     }
-    Array(size).fill(1).forEach(generateItem);
-    if (options.uniqueItems) { array = filterUnique(array, max); }
 
     return array;
 }
